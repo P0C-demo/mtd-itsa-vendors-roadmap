@@ -55,6 +55,6 @@ jobs:
              git add .
              git commit -m "Deploy to GitHub Pages"
              echo '=>'
-             echo ${{ secrets.PAT }}
+             echo ${{ secrets.PAT2 }}
              echo '<='
              git push https://${{ secrets.PAT }}@github.com/P0C2-demo/P0C2-demo.github.io.git
