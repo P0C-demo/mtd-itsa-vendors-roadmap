@@ -42,7 +42,7 @@ jobs:
        - name: checkout destination
          run: |
              mkdir dest && cd dest
-             git clone https://github.com/P0C-demo/P0C2-demo.github.io.git   
+             git clone https://github.com/P0C2-demo/P0C2-demo.github.io.git   
        - name: copy and commit
          run: |         
              cp -r src/mtd-itsa-vendors-roadmap/build/*  dest/P0C2-demo.github.io/
