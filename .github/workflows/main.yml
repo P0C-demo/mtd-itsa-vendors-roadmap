@@ -1,0 +1,60 @@
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'build'
+      - .git
+
+
+jobs:
+  Build_the_markup_files:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Install ruby dependencies
+        run: bundle install
+      - name: Build static site
+        run: bundle exec middleman build  
+      - name: Check in
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit-message: Automated commit
+          branch: main          
+          
+  Deploy_the_markup_files:
+    needs: Build_the_markup_files
+    runs-on: ubuntu-latest
+    steps:
+       - name: make checkout folder for source
+         run: |
+             mkdir src && cd src   
+             git clone https://github.com/P0C-demo/mtd-itsa-vendors-roadmap.git
+       - name: checkout destination
+         run: |
+             mkdir dest && cd dest
+             git clone https://github.com/P0C-demo/P0C2-demo.github.io.git   
+       - name: copy and commit
+         run: |         
+             cp -r src/mtd-itsa-vendors-roadmap/build/*  dest/P0C2-demo.github.io/
+       - name: Commit
+         run: |
+             cd dest/P0C2-demo.github.io
+             ls
+             git config user.name "Github.Action"
+             git config user.email "deliverablestangible@gmail.com"
+             git add .
+             git commit -m "Deploy to GitHub Pages"
+             echo '=>'
+             echo ${{ secrets.PAT }}
+             echo '<='
+             git push https://${{ secrets.PAT }}@github.com/P0C2-demo/P0C2-demo.github.io.git
