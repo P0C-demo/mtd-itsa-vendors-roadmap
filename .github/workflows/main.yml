@@ -7,7 +7,6 @@ on:
       - 'build'
       - .git
 
-
 jobs:
   Build_the_markup_files:
     runs-on: ubuntu-latest
@@ -25,32 +24,24 @@ jobs:
         run: bundle install
       - name: Build static site
         run: bundle exec middleman build  
-      - name: Check in
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit-message: Automated commit
-          branch: main          
-          
-  Deploy_the_markup_files:
-    needs: Build_the_markup_files
-    runs-on: ubuntu-latest
-    steps:
-       - name: make checkout folder for source
-         run: |
-             mkdir src && cd src   
-             git clone https://github.com/P0C-demo/mtd-itsa-vendors-roadmap.git
-       - name: Check for changes
-         id: check_changes
-         run: |
-             cd src/mtd-itsa-vendors-roadmap
-             git diff --exit-code || echo "Changes found"
-       - name: Copy and commit if changes
-         if: steps.check_changes.outputs.result == 'Changes found'
-         run: |         
-             cp -r src/mtd-itsa-vendors-roadmap/build/*  dest/P0C2-demo.github.io/
-             cd dest/P0C2-demo.github.io
-             git config user.name "Github.Action"
-             git config user.email "deliverablestangible@gmail.com"
-             git add .
-             git commit -m "Deploy to GitHub Pages"               
-             git push https://${{ secrets.PAT2 }}@github.com/P0C2-demo/P0C2-demo.github.io.git
+      - name: checkout destination
+        run: |
+           mkdir dest && cd dest
+           git clone https://github.com/P0C2-demo/P0C2-demo.io.git
+      - name: Check for changes
+        id: check_changes
+        run: |
+             cd src/mtd-itsa-vendors-roadmap/build
+             if git diff --exit-code --quiet .; then
+               echo "No changes found"  
+             fi
+      - name: Retrieve markup files
+        if: steps.check_changes.outputs.result != 'No changes found'        
+        run: |         
+            cp -r src/mtd-itsa-vendors-roadmap/build/*  dest/P0C2-demo.github.io/
+            cd dest/P0C2-demo.github.io
+            git config user.name "Github.Action"
+            git config user.email "deliverablestangible@gmail.com"
+            git add .
+            git commit -m "Deploy to GitHub Pages"               
+            git push https://${{ secrets.PAT2 }}@github.com/P0C2-demo/P0C2-demo.github.io.git
