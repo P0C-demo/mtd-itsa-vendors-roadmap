@@ -19,11 +19,20 @@ jobs:
       - name: Setup ruby
         uses: ruby/setup-ruby@v1
         with:
+          ruby-version: '3.2.2'
           bundler-cache: false
+      - name: Checkout guide
+        run: |
+          mkdir src && cd src
+          git clone https://github.com/P0C-demo/mtd-itsa-vendors-roadmap.git      
       - name: Install ruby dependencies
-        run: bundle install
+        run: |
+          cd src/mtd-itsa-vendors-roadmap
+          bundle install
       - name: Build static site
-        run: bundle exec middleman build  
+        run: |
+           cd src/mtd-itsa-vendors-roadmap
+           bundle exec middleman build  
       - name: checkout destination
         run: |
            mkdir dest && cd dest
