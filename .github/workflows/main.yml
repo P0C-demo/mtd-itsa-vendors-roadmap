@@ -40,12 +40,16 @@ jobs:
       - name: Check for changes
         id: check_changes
         run: |
-             cd src/mtd-itsa-vendors-roadmap/build
-             if git diff --exit-code --quiet .; then
-               echo "No changes found"  
-             fi
+          if git diff --exit-code --quiet .; then
+            echo "No changes found"  
+            echo "changes=false" >> "$GITHUB_ENV"
+          else
+            echo "changes=true" >> "$GITHUB_ENV"
+          fi
+          echo ${{ steps.check_changes.changes }}
+
       - name: Retrieve markup files
-        if: steps.check_changes.outputs.result != 'No changes found'        
+        if:  ${{ steps.check_changes.changes }} == 'true'       
         run: |         
             cp -r src/mtd-itsa-vendors-roadmap/build/*  dest/P0C2-demo.github.io/
             cd dest/P0C2-demo.github.io
