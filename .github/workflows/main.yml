@@ -6,7 +6,10 @@ on:
     paths-ignore:
       - 'build'
       - .git
-
+  workflow_dispatch:
+    inputs:
+     tags:
+      description: 'Manual'
 jobs:
   Build_the_markup_files:
     runs-on: ubuntu-latest
